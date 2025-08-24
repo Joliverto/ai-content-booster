@@ -54,6 +54,12 @@ def generate_content(product_name, niche, target_audience, benefits):
 # -------------- UI Streamlit --------------
 st.title("AI Content Booster")
 st.write("Uma ferramenta simples para afiliados gerarem posts personalizados com IA (Gemini).")
+st.markdown(
+    """
+    **Protótipo criado por João de Oliveira Neto**  
+    [🌐 LinkedIn](https://www.linkedin.com/in/joao-neto-0962b0247) | [💻 GitHub](https://github.com/Joliverto)
+    """
+)
 
 product_name = st.text_input("Nome do Produto (ex: Curso de Finanças Pessoais)")
 niche = st.text_input("Nicho (ex: Finanças Pessoais)")
