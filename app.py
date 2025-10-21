@@ -52,7 +52,7 @@ def generate_content(product_name, niche, target_audience, benefits):
     return resp.text
 
 # -------------- UI Streamlit --------------
-st.title("AI Content Booster")
+st.title("AI Content Booster I")
 st.write("Uma ferramenta simples para afiliados gerarem posts personalizados com IA (Gemini).")
 st.markdown(
     """
