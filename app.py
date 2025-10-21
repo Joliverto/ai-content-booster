@@ -17,7 +17,7 @@ if not GOOGLE_API_KEY:
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # Escolha do modelo (gratuito/rápido)
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-2.5-flash"
 
 # Parâmetros de geração (opcional)
 GEN_CFG = {
@@ -79,3 +79,6 @@ if st.button("Gerar Posts"):
         st.error("Preencha todos os campos!")
 
 st.write("Disclaimer: Este é um protótipo. Verifique o conteúdo gerado manualmente para evitar erros.")
+
+#for m in genai.list_models():
+    #print(m.name)
