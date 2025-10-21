@@ -25,7 +25,46 @@ GEN_CFG = {
     "max_output_tokens": 1200,
 }
 
-# Função para gerar conteúdo com IA (usando Gemini)
+# --- Função segura para extrair texto da resposta ---
+def _safe_extract_text_from_response(resp):
+    """
+    Extrai texto de resp de forma segura. Retorna string com diagnóstico
+    se não encontrar texto (evita o erro do .text quando não há Part).
+    """
+    try:
+        # 1) Tenta a forma robusta: candidates -> content -> parts -> text
+        if getattr(resp, "candidates", None):
+            cand = resp.candidates[0]
+            content = getattr(cand, "content", None)
+            if content and getattr(content, "parts", None):
+                part = content.parts[0]
+                if getattr(part, "text", None):
+                    return part.text
+
+        # 2) Fallback para o atalho .text (se disponível)
+        if getattr(resp, "text", None):
+            return resp.text
+
+    except Exception:
+        # qualquer erro ao navegar na estrutura, cai no fallback abaixo
+        pass
+
+    # 3) Se nada deu certo, retorna mensagem amigável com diagnóstico resumido
+    finish = None
+    try:
+        finish = resp.candidates[0].finish_reason
+    except Exception:
+        finish = "unknown"
+
+    diag = (
+        "⚠️ O modelo retornou sem partes de texto válidas.\n"
+        f"finish_reason: {finish}\n"
+        "Tente novamente (ou escolha outro modelo)."
+    )
+    return diag
+
+
+# --- Função generate_content (mínima alteração) ---
 def generate_content(product_name, niche, target_audience, benefits):
     prompt = (
         f"Gere 5 posts criativos para redes sociais promovendo o produto '{product_name}' "
@@ -38,16 +77,13 @@ def generate_content(product_name, niche, target_audience, benefits):
 
     model = genai.GenerativeModel(MODEL_NAME)
 
-    # Você pode usar safety_settings se quiser relaxar/bloquear categorias — default já é ok.
-    # Exemplo: safety_settings=[{"category": "HARM_CATEGORY_UNSPECIFIED", "threshold": "BLOCK_NONE"}]
-
     resp = model.generate_content(
         prompt,
         generation_config=GEN_CFG,
     )
 
-    # A resposta de texto fica em .text
-    return resp.text
+    # Substitui o uso direto de resp.text por extração segura
+    return _safe_extract_text_from_response(resp)
 
 # -------------- UI Streamlit --------------
 st.title("AI Content Booster I")
